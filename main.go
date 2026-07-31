@@ -131,7 +131,13 @@ func merge(base, ours, theirs string) int {
 	return 0
 }
 
+var version = "dev" // set by goreleaser via -ldflags
+
 func main() {
+	if len(os.Args) == 2 && (os.Args[1] == "version" || os.Args[1] == "--version" || os.Args[1] == "-v") {
+		fmt.Println(version)
+		return
+	}
 	if len(os.Args) != 4 {
 		fmt.Fprintln(os.Stderr, "usage: compote <base> <ours> <theirs> (git merge driver: %O %A %B)")
 		os.Exit(2)

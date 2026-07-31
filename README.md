@@ -15,7 +15,21 @@ byte-identical, so the follow-up merge sees a minimal diff.
 ## Install
 
 ```sh
+brew install jcgay/jcgay/compote
+```
+
+or
+
+```sh
 go install github.com/jcgay/compote@latest
+```
+
+## Build
+
+```sh
+mise install    # installs the pinned Go
+mise run check  # test + vet + gofmt
+mise run build
 ```
 
 ## Setup

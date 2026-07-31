@@ -1,0 +1,65 @@
+# https://goreleaser.com
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    mod_timestamp: "{{ .CommitTimestamp }}"
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w -X main.version={{ .Version }}
+
+archives:
+  - formats: [tar.gz]
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    name_template: >-
+      {{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}
+
+homebrew_casks:
+  - repository:
+      owner: jcgay
+      name: homebrew-jcgay
+      token: "{{ .Env.TAP_GITHUB_TOKEN }}"
+    # no `directory`: Homebrew only discovers casks in Casks/ (cask_dir is
+    # hardcoded), unlike formulae which could live at the repo root.
+    homepage: "https://github.com/jcgay/compote"
+    description: "Git merge driver that smooths pom.xml version conflicts"
+    hooks:
+      post:
+        # binary is unsigned: strip the Gatekeeper quarantine flag on macOS
+        install: |
+          if OS.mac?
+            system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/compote"]
+          end
+    caveats: |
+      Configure the merge driver:
+        git config --global merge.compote.name "Écrase les poms proprement"
+        git config --global merge.compote.driver "compote %O %A %B"
+      Then in your repo's .gitattributes:
+        pom.xml merge=compote
+        **/pom.xml merge=compote
+
+checksum:
+  name_template: "checksums.txt"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
