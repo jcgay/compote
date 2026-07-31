@@ -34,18 +34,32 @@ mise run build
 
 ## Setup
 
-```ini
-# ~/.gitconfig or .git/config
-[merge "compote"]
-    name = Écrase les poms proprement
-    driver = compote %O %A %B
+Declare the driver once, globally:
+
+```sh
+git config --global merge.compote.name "Écrase les poms proprement"
+git config --global merge.compote.driver "compote %O %A %B"
 ```
+
+Then bind it to `pom.xml`, either **globally for all your repos** (git reads
+`~/.config/git/attributes` by default):
+
+```sh
+mkdir -p ~/.config/git
+echo 'pom.xml merge=compote' >> ~/.config/git/attributes
+```
+
+or **per repo**, committed so teammates who installed compote benefit too:
 
 ```gitattributes
 # .gitattributes
 pom.xml merge=compote
-**/pom.xml merge=compote
 ```
+
+A pattern without a slash matches at any depth, so one line covers every
+module of a multi-module build. Both setups are safe to mix: a committed
+`.gitattributes` takes precedence over the global file, and teammates
+without compote silently fall back to the standard 3-way merge.
 
 Note: git only invokes merge drivers on a real 3-way merge — fast-forward
 merges bypass them (nothing to resolve anyway).

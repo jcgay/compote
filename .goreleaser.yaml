@@ -49,9 +49,11 @@ homebrew_casks:
       Configure the merge driver:
         git config --global merge.compote.name "Écrase les poms proprement"
         git config --global merge.compote.driver "compote %O %A %B"
-      Then in your repo's .gitattributes:
+      Then bind it to pom.xml, globally for all your repos:
+        mkdir -p ~/.config/git
+        echo 'pom.xml merge=compote' >> ~/.config/git/attributes
+      or per repo, in a committed .gitattributes:
         pom.xml merge=compote
-        **/pom.xml merge=compote
 
 checksum:
   name_template: "checksums.txt"
