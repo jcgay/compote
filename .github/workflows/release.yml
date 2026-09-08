@@ -16,6 +16,10 @@ jobs:
         with:
           fetch-depth: 0
       - uses: jdx/mise-action@v4
+        with:
+          # Pinned: mise.jdx.dev/VERSION advertises 2026.9.3 but the release assets 404.
+          # Drop this `with:` block once upstream publishes them.
+          version: 2026.9.2
       - uses: goreleaser/goreleaser-action@v7
         with:
           distribution: goreleaser
