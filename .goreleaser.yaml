@@ -38,13 +38,17 @@ homebrew_casks:
     # hardcoded), unlike formulae which could live at the repo root.
     homepage: "https://github.com/jcgay/compote"
     description: "Git merge driver that smooths pom.xml version conflicts"
-    hooks:
-      post:
-        # binary is unsigned: strip the Gatekeeper quarantine flag on macOS
-        install: |
-          if OS.mac?
-            system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/compote"]
-          end
+    # `hooks.post.install` would emit Homebrew's deprecated `postflight` stanza,
+    # so declare the replacement `postflight_steps` ourselves. Its paths default
+    # to `staged_path`, hence `chdir: "."` instead of an interpolated path (which
+    # would need `{{ }}` escaping here anyway).
+    custom_block: |
+      postflight_steps do
+        on_macos do
+          # binary is unsigned: strip the Gatekeeper quarantine flag
+          run "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "compote"], chdir: "."
+        end
+      end
     caveats: |
       Configure the merge driver:
         git config --global merge.compote.name "Écrase les poms proprement"
