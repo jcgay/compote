@@ -14,7 +14,7 @@ jobs:
         with:
           # Pinned: mise.jdx.dev/VERSION advertises 2026.9.3 but the release assets 404.
           # Drop this `with:` block once upstream publishes them.
-          version: 2026.9.2
+          version: 2026.9.6
       - run: go build -o compote .
       - run: go vet ./...
       - run: go test ./...
